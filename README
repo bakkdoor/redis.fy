@@ -1,0 +1,2 @@
+redis.fy is a Redis client library for Fancy.
+It's still a workin progress, but most commands should work as expected.
