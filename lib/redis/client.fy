@@ -2,14 +2,21 @@ class Redis {
   class Client {
     DefaultHost = "localhost"
     DefaultPort = 6379
-    DefaultUser = "anonymous"
-    DefaultPassword = "anonymous"
+    read_slots: ('db, 'password)
 
-    def initialize: host port: port user: user password: password {
-      @connection = Connection new: host port: port user: user password: password
-      @connection open
+    def initialize: host (DefaultHost) port: port (DefaultPort) db: @db (nil) password: @password (nil) {
+      @connection = Connection new: host port: port
       @thread_safe = true
       @mutex = Mutex new
+      connect
+    }
+
+    def initialize: host db: db password: password (nil) {
+      initialize: host port: DefaultPort db: db password: password
+    }
+
+    def initialize: host password: password {
+      initialize: host port: DefaultPort db: nil password: password
     }
 
     def disable_thread_safety! {
@@ -19,12 +26,29 @@ class Redis {
       }
     }
 
-    def thread_safe? {
-      @thread_safe
+    def connect {
+      unless: connected? do: {
+        @connection open
+        { call: ['auth, @password] } if: @password
+        { call: ['select, @db] } if: @db
+      }
     }
 
-    def initialize: host (DefaultHost) user: user (DefaultUser) password: password (DefaultPassword) {
-      initialize: host port: DefaultPort user: user password: password
+    def reconnect {
+      disconnect
+      connect
+    }
+
+    def disconnect {
+      @connection close
+    }
+
+    def connected? {
+      @connection open?
+    }
+
+    def thread_safe? {
+      @thread_safe
     }
 
     def call: command {
@@ -99,10 +123,6 @@ class Redis {
 
     def boolean: reply {
       reply to_i == 1
-    }
-
-    def disconnect {
-      @connection close
     }
   }
 }

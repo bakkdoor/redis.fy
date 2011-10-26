@@ -9,20 +9,25 @@ class Redis {
     DOLLAR   = "$"
     ASTERISK = "*"
 
-    read_slots: ('host, 'port, 'user, 'password)
-    def initialize: @host port: @port user: @user password: @password
+    read_slots: ('host, 'port)
+    def initialize: @host port: @port
 
     def open {
       @sock = TCPSocket open: @host port: @port
       @sock setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
     }
 
-    def connected? {
-      @sock not not
+    def close {
+      try {
+        @sock close
+      } catch {
+      } finally {
+        @sock = nil
+      }
     }
 
-    def close {
-      @sock close
+    def open? {
+      @sock nil? not
     }
 
     def send_command: params {
