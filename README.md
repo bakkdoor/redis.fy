@@ -1,10 +1,12 @@
-redis.fy is a Redis client library for Fancy.
+# redis.fy
+A Fancy Redis client library.
+
 It's still work in progress, but most commands should work as expected.
 
 It's licensed under the BSD license.
 See LICENSE file for more information.
 
-Example usage:
+## Example usage:
 
     require: "redis"
     r = Redis Client new # defaults to localhost
@@ -16,5 +18,5 @@ Example usage:
     r('get, 'msg) println
 
 
-Thanks go to:
+## Credits
 Inspired in some parts by https://github.com/ezmobius/redis-rb
