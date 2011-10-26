@@ -8,6 +8,7 @@ class Redis {
       @connection = Connection new: host port: port
       @thread_safe = true
       @mutex = Mutex new
+      @channel_handlers = <[]>
       connect
     }
 
@@ -57,6 +58,7 @@ class Redis {
       match cmd_name {
         case 'hgetall -> return hgetall: command
         case 'keys -> return keys: command
+        case 'subscribe -> return subscribe: command
       }
 
       reply = command: command
@@ -112,6 +114,22 @@ class Redis {
       }
     }
 
+    def subscribe: command {
+      channel_handlers = command second
+      channel_handlers each: |chan block| {
+        chan = chan to_s
+        { @channel_handlers[chan]: [] } unless: $ @channel_handlers[chan]
+        @channel_handlers[chan] << block
+      }
+
+      command = command second keys unshift: 'subscribe
+      reply = command: $ command
+
+      { start_subscribe_thread } unless: @subscribe_thread
+
+      reply
+    }
+
     # private
 
     def command: command {
@@ -123,6 +141,23 @@ class Redis {
 
     def boolean: reply {
       reply to_i == 1
+    }
+
+    def start_subscribe_thread {
+      @subscribe_thread = Thread new: {
+        loop: {
+          @mutex synchronize: {
+            reply = @connection read_reply
+            if: (reply first == "message") then: {
+              type, chan, message = reply
+              @channel_handlers[chan] each: @{ call: [message] }
+            } else: {
+              @subscribe_thread = nil
+              *stderr* println: "Expected message publish reply. Got: #{reply inspect}"
+            }
+          }
+        }
+      }
     }
   }
 }
