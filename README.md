@@ -10,12 +10,8 @@ See LICENSE file for more information.
 
     require: "redis"
     r = Redis Client new # defaults to localhost
-    r call: ('set, 'msg, "hello, world")
-    r call: ('get, 'msg) println # => "hello, world"
-
-    # Or using the call: short-cut syntax:
-    r('set, 'msg, "hello, world")
-    r('get, 'msg) println
+    r[('set, 'msg, "hello, world")]
+    r[('get, 'msg)] println # => "hello, world"
 
 
 ## Credits

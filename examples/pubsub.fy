@@ -7,11 +7,11 @@ subscribe_handlers = <[
 ]>
 
 # subscribe twice
-Redis Client new call: ('subscribe, subscribe_handlers)
-Redis Client new call: ('subscribe, subscribe_handlers)
+Redis Client new[('subscribe, subscribe_handlers)]
+Redis Client new[('subscribe, subscribe_handlers)]
 
 
 r3 = Redis Client new
 10 times: |i| {
-  r3 call: ('publish, 'channel, "message: #{i}")
+  r3[('publish, 'channel, "message: #{i}")]
 }

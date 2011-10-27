@@ -3,13 +3,13 @@ require: "redis"
 r = Redis Client new
 
 "incr:" println
-r('del, 'counter)
+r[('del, 'counter)]
 
 10 times: {
-  r('incr, 'counter) println
+  r[('incr, 'counter)] println
 }
 
 "\ndecr:" println
 10 times: {
-  r('decr, 'counter) println
+  r[('decr, 'counter)] println
 }

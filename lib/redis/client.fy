@@ -84,12 +84,8 @@ class Redis {
 
     # special commands handled differently
 
-    def [key]: value {
-      call: ('set, key, value)
-    }
-
-    def [key] {
-      call: ('get, key)
+    def [command] {
+      call: $ command to_a
     }
 
     def hgetall: command {
