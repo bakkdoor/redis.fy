@@ -150,6 +150,7 @@ class Redis {
             } else: {
               @subscribe_thread = nil
               *stderr* println: "Expected message publish reply. Got: #{reply inspect}"
+              break
             }
           }
         }
