@@ -75,7 +75,7 @@ class Redis {
         case 'srem ->
           match command skip: 2 . size {
             case 1 -> boolean: reply
-            case _ -> repl
+            case _ -> reply
           }
 
         case _ -> reply

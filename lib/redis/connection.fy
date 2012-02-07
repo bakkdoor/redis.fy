@@ -31,7 +31,12 @@ class Redis {
     }
 
     def send_command: params {
-      @sock send: $ build_command: params
+      if: @sock then: {
+        @sock send: $ build_command: params
+      } else: {
+        reconnect
+        send_command: params
+      }
     }
 
     def build_command: params {
