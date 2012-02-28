@@ -1,6 +1,13 @@
 class Redis {
   class Connection {
-    class ProtocolError : StandardError
+    class ProtocolError : Redis Error
+
+    class Error : Redis Error {
+      def initialize: @err host: @host port: @port {
+        initialize: "Can't connect to Redis on: #{@host}:#{@port} : #{@err inspect}"
+      }
+    }
+
 
     DELIMITER = "\r\n"
     MINUS    = "-"
@@ -13,8 +20,12 @@ class Redis {
     def initialize: @host port: @port
 
     def open {
-      @sock = TCPSocket open: @host port: @port
-      @sock setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
+      try {
+        @sock = TCPSocket open: @host port: @port
+        @sock setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
+      } catch Exception => e {
+        Error new: e host: @host port: @port . raise!
+      }
     }
 
     def close {
@@ -55,14 +66,14 @@ class Redis {
 
     def read_reply {
       reply = @sock read: 1
-      { raise(Errno ECONNRESET) } unless: reply
+      { Error new: (Errno ECONNRESET) host: @host port: @port . raise! } unless: reply
       data = @sock readline
       format_reply: reply data: data
     }
 
     def format_reply: reply data: data {
       match reply {
-        case MINUS -> Error new: $ data strip
+        case MINUS -> ErrorResponse new: $ data strip
         case PLUS -> data strip
         case COLON -> data to_i
         case DOLLAR -> bulk_reply: data
