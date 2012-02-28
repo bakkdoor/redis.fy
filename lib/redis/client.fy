@@ -52,6 +52,16 @@ class Redis {
       @thread_safe
     }
 
+    def transaction: block {
+      try {
+        call: ['multi]
+        block call: [self]
+      } catch {
+      } finally {
+        call: ['exec]
+      }
+    }
+
     def call: command {
       cmd_name = command first
 
