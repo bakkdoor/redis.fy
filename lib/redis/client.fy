@@ -3,12 +3,14 @@ class Redis {
     DefaultHost = "localhost"
     DefaultPort = 6379
     read_slots: ('db, 'password)
+    read_write_slot: 'connection_retries
 
     def initialize: host (DefaultHost) port: port (DefaultPort) db: @db (nil) password: @password (nil) {
       @connection = Connection new: host port: port
       @thread_safe = true
       @mutex = Mutex new
       @channel_handlers = <[]>
+      @connection_retries = 2
       connect
     }
 
@@ -140,8 +142,10 @@ class Redis {
 
     def command: command {
       @mutex synchronize: {
-        @connection send_command: command
-        @connection read_reply
+        @connection_retries times_try: {
+          @connection send_command: command
+          @connection read_reply
+        } retry_with: { @connection reconnect }
       }
     }
 

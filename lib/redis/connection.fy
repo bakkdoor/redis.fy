@@ -37,6 +37,11 @@ class Redis {
       }
     }
 
+    def reconnect {
+      close
+      open
+    }
+
     def open? {
       @sock nil? not
     }
