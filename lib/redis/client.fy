@@ -145,7 +145,7 @@ class Redis {
         @connection_retries times_try: {
           @connection send_command: command
           @connection read_reply
-        } retry_with: { @connection reconnect }
+        } retry_with: { reconnect }
       }
     }
 
@@ -157,7 +157,9 @@ class Redis {
       @subscribe_thread = Thread new: {
         loop: {
           @mutex synchronize: {
-            reply = @connection read_reply
+            reply = @connection_retries times_try: {
+              @connection read_reply
+            } retry_with: { reconnect }
             if: (reply first == "message") then: {
               type, chan, message = reply
               @channel_handlers[chan] each: @{ call: [message] }
