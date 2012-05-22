@@ -101,9 +101,9 @@ class Redis {
       cmd_name = command first
 
       match cmd_name {
-        case 'hgetall -> return hgetall: command
-        case 'keys -> return keys: command
-        case 'subscribe -> return subscribe: command
+        case 'hgetall -> return handle_hgetall: command
+        case 'keys -> return handle_keys: command
+        case 'subscribe -> return handle_subscribe: command
       }
 
       reply = command: command
@@ -133,7 +133,7 @@ class Redis {
       call: $ command to_a
     }
 
-    def hgetall: command {
+    def handle_hgetall: command {
       reply = command: command
       match reply {
         case Array ->
@@ -147,7 +147,7 @@ class Redis {
       }
     }
 
-    def keys: command {
+    def handle_keys: command {
       reply = command: command
       match reply {
         case String -> reply split: " "
@@ -155,7 +155,7 @@ class Redis {
       }
     }
 
-    def subscribe: command {
+    def handle_subscribe: command {
       channel_handlers = command second
       channel_handlers each: |chan block| {
         chan = chan to_s
