@@ -13,5 +13,5 @@ Redis Client new[('subscribe, subscribe_handlers)]
 
 r3 = Redis Client new
 10 times: |i| {
-  r3[('publish, 'channel, "message: #{i}")]
+  r3 publish: ('channel, "message: #{i}")
 }

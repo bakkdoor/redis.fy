@@ -5,6 +5,39 @@ class Redis {
     read_slots: ('db, 'password)
     read_write_slot: 'connection_retries
 
+    def self redis_commands: commands {
+      commands each: |cmd| {
+        command_name = cmd to_s substitute: "_" with: " "
+        define_method: "#{cmd}:" with: |args| {
+          call: (args to_a unshift: command_name)
+        }
+      }
+    }
+
+    redis_commands: ['append, 'auth, 'bgrewriteaof, 'bgsave,
+    'bitcount, 'bitop, 'blpop, 'brpop, 'brpoplpush, 'config_get,
+    'config_set, 'config_resetstat, 'dbsize, 'debug_object,
+    'debug_segfault, 'decr, 'decrby, 'del, 'discard, 'dump, 'echo,
+    'eval, 'exec, 'exists, 'expire, 'expireat, 'flushall, 'flushdb,
+    'get, 'getbit, 'getrange, 'getset, 'hdel, 'hexists, 'hget,
+    'hgetall, 'hincrby, 'hincrbyfloat, 'hkeys, 'hlen, 'hmget, 'hmset,
+    'hset, 'hsetnx, 'hvals, 'incr, 'incrby, 'incrbyfloat, 'info,
+    'keys, 'lastsave, 'lindex, 'linsert, 'llen, 'lpop, 'lpush,
+    'lpushx, 'lrange, 'lrem, 'lset, 'ltrim, 'mget, 'migrate, 'monitor,
+    'move, 'mset, 'msetnx, 'multi, 'object, 'persist, 'pexpire,
+    'pexpireat, 'ping, 'psetex, 'psubscribe, 'pttl, 'publish,
+    'punsubscribe, 'quit, 'randomkey, 'rename, 'renamenx, 'restore,
+    'rpop, 'rpoplpush, 'rpush, 'rpushx, 'sadd, 'save, 'scard,
+    'script_exists, 'script_flush, 'script_kill, 'script_load, 'sdiff,
+    'sdiffstore, 'select, 'set, 'setbit, 'setex, 'setnx, 'setrange,
+    'shutdown, 'sinter, 'sinterstore, 'sismember, 'slaveof, 'slowlog,
+    'smembers, 'smove, 'sort, 'spop, 'srandmember, 'srem, 'strlen,
+    'subscribe, 'sunion, 'sunionstore, 'sync, 'time, 'ttl, 'type,
+    'unsubscribe, 'unwatch, 'watch, 'zadd, 'zcard, 'zcount, 'zincrby,
+    'zinterstore, 'zrange, 'zrangebyscore, 'zrank, 'zrem,
+    'zremrangebyrank, 'zremrangebyscore, 'zrevrange,
+    'zrevrangebyscore, 'zrevrank, 'zscore, 'zunionstore]
+
     def initialize: host (DefaultHost) port: port (DefaultPort) db: @db (nil) password: @password (nil) {
       @connection = Connection new: host port: port
       @thread_safe = true
