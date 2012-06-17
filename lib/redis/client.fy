@@ -1,5 +1,14 @@
 class Redis {
   class Client {
+    """
+    Redis Client class.
+
+    Example:
+          redis = Redis Client new # defaults to localhost and default Redis port
+          redis set: ('library_name, \"redis.fy\")
+          redis get: 'library_name  # => \"redis.fy\"
+    """
+
     DefaultHost = "localhost"
     DefaultPort = 6379
     read_slots: ('db, 'password)
