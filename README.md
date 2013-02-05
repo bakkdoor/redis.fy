@@ -1,8 +1,6 @@
 # redis.fy
 A Fancy Redis client library.
 
-It's still work in progress, but most commands should work as expected.
-
 It's licensed under the BSD license.
 See LICENSE file for more information.
 
