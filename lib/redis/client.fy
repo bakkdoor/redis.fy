@@ -98,15 +98,16 @@ class Redis {
 
     def transaction: block {
       try {
-        call: ['multi]
+        call: 'multi
         block call: [self]
-      } catch {
+        call: 'exec
       } finally {
-        call: ['exec]
+        call: 'discard
       }
     }
 
     def call: command {
+      command = command to_a
       cmd_name = command first
 
       match cmd_name {
