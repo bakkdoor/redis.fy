@@ -13,4 +13,4 @@ See LICENSE file for more information.
 
 
 ## Credits
-Inspired in some parts by https://github.com/ezmobius/redis-rb
+Inspired in some parts by https://github.com/redis/redis-rb
